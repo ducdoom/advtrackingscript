@@ -73,6 +73,7 @@
                 viewRequest.send(JSON.stringify(viewData));
             }
 
+            console.log(viewData);
             console.log("log view");
         },
         logSuccessAction: function() {
