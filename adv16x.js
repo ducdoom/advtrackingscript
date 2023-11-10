@@ -72,6 +72,8 @@
                 viewRequest.setRequestHeader("Content-Type", "application/json");
                 viewRequest.send(JSON.stringify(viewData));
             }
+
+            console.log("log view");
         },
         logSuccessAction: function() {
             const affCodeCookie = getCookieValue("ManyAff_Cookies");
