@@ -37,7 +37,7 @@
                         email: customerEmail,
                         fullname: customerFirstName,
                         phone: customerPhone,
-                        partner: "adv19"
+                        partner: "adv16"
                     };
 
                     const logRequest = new XMLHttpRequest();
