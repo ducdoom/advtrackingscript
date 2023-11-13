@@ -57,7 +57,7 @@
             if (affCodeParam !== null && currentAffCodeCookie !== affCodeParam) {
                 let expiryTime = new Date();
                 expiryTime.setTime(expiryTime.getTime() + 1296e6);
-                document.cookie = "ManyAff_Cookies=" + affCodeParam + ";expires=" + expiryTime.toUTCString() + "; domain=.ducdoom2.io.vn;path=/";
+                document.cookie = "ManyAff_Cookies=" + affCodeParam + ";expires=" + expiryTime.toUTCString() + "; domain=.ducdoom.io.vn;path=/";
                 currentAffCodeCookie = affCodeParam;
             }
             if (currentAffCodeCookie !== null) {
@@ -72,9 +72,6 @@
                 viewRequest.setRequestHeader("Content-Type", "application/json");
                 viewRequest.send(JSON.stringify(viewData));
             }
-
-            console.log(viewData);
-            console.log("log view");
         },
         logSuccessAction: function() {
             const affCodeCookie = getCookieValue("ManyAff_Cookies");
