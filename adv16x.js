@@ -57,7 +57,7 @@
             if (affCodeParam !== null && currentAffCodeCookie !== affCodeParam) {
                 let expiryTime = new Date();
                 expiryTime.setTime(expiryTime.getTime() + 1296e6);
-                document.cookie = "ManyAff_Cookies=" + affCodeParam + ";expires=" + expiryTime.toUTCString() + "; domain=.ducdoom.io.vn;path=/";
+                document.cookie = "ManyAff_Cookies=" + affCodeParam + ";expires=" + expiryTime.toUTCString() + "; domain=.ducdoom2.io.vn;path=/";
                 currentAffCodeCookie = affCodeParam;
             }
             if (currentAffCodeCookie !== null) {
