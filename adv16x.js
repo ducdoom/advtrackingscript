@@ -25,7 +25,7 @@
                     email: email,
                     fullname: fullname,
                     phone: phone,
-                    partner: 'adv19'
+                    partner: 'adv16'
                 };
                 xhr.open('POST', 'https://api.manyaff.com/api/v1/log_success_custom', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
