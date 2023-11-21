@@ -1,56 +1,176 @@
-! function() {
-    const o = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(e, t) {
-        this._method = e, this._url = t, o.apply(this, arguments)
-    };
-    const t = XMLHttpRequest.prototype.send;
+(function () {
+    // Function to handle the intercepted request
+    function handleRequest(method, url, data_json) {
+        // Do something with the POST request
+        // console.log('POST request caught:', { method, url, data });
+        // You can perform any other logic here to handle the request.
+        data_json = JSON.parse(data_json);
+        // console.log(data.customer_email);
+        var url_action = split_url(url);
+        // console.log(url_action);
+        // if(url_action == 'https://api.checkout.ladisales.com/1.0/checkout/payment' || url_action == 'https://api.checkout.ladisales.com/1.0/checkout/payment/'){
+            var aff_code_in_cookies = getCookie('ManyAff_Cookies');
+            if(aff_code_in_cookies != null){
+                // console.log("se post");
+                // const formData_2 = new FormData(event.target);
 
-    function s(t) {
-        const e = document.cookie,
-            o = e.split(";");
-        for (let e = 0; e < o.length; e++) {
-            const n = o[e].split("=");
-            if (n[0].trim() === t) return decodeURIComponent(n[1])
-        }
-        return null
+                var email = data_json.customer_email;
+                var fullname = data_json.customer_first_name;
+                var phone = data_json.customer_phone;
+                var xhr = new XMLHttpRequest();
+                var data = {
+                    url: window.location.href,
+                    referrer: window.document.referrer,
+                    aff_code: aff_code_in_cookies,
+                    email: email,
+                    fullname: fullname,
+                    phone: phone,
+                    partner: 'adv19'
+                };
+                xhr.open('POST', 'https://api.manyaff.com/api/v1/log_success_custom', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(data));
+            }
+        // }
     }
-    XMLHttpRequest.prototype.send = function(e) {
-        "POST" === this._method && function(e, t) {
-            t = JSON.parse(t);
-            var o, n, i = e.split("?")[0];
-            "https://api.checkout.ladisales.com/1.0/checkout/payment" != i && "https://api.checkout.ladisales.com/1.0/checkout/payment/" != i || null != (o = s("ManyAff_Cookies")) && (n = t.customer_email, e = t.customer_first_name, i = t.customer_phone, t = new XMLHttpRequest, i = {
-                url: window.location.href,
-                referrer: window.document.referrer,
-                aff_code: o,
-                email: n,
-                fullname: e,
-                phone: i,
-                partner: "adv16"
-            }, t.open("POST", "https://api.manyaff.com/api/v1/log_success_custom", !0), t.setRequestHeader("Content-Type", "application/json"), t.send(JSON.stringify(i)))
-        }((this._method, this._url), e), t.apply(this, arguments)
+    
+    // Intercept the XMLHttpRequest open and send methods
+    const open = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url) {
+        this._method = method;
+        this._url = url;
+        open.apply(this, arguments);
     };
-    const e = {
-        logView: function() {
-            var e, t, o, n = new URLSearchParams(window.location.search).get("aff"),
-                i = s("ManyAff_Cookies");
-            null != n && i != n && (e = n, t = new Date, o = t.getTime() + 1296e6, t.setTime(o), document.cookie = "ManyAff_Cookies=" + e + ";expires=" + t.toUTCString() + "; domain=.ducdoom.io.vn;path=/", i = n), null != i && (n = new XMLHttpRequest, i = {
-                url: window.location.href,
-                referrer: window.document.referrer,
-                aff_code: i
-            }, n.open("POST", "https://api.manyaff.com/api/v1/log_view", !0), n.setRequestHeader("Content-Type", "application/json"), n.send(JSON.stringify(i)))
-        },
-        logSuccess: function() {
-            var e, t, o = s("ManyAff_Cookies");
-            null != o && (t = params.get("your-email"), e = new XMLHttpRequest, t = {
-                url: window.location.href,
-                referrer: window.document.referrer,
-                aff_code: o,
-                email: t,
-                partner: "adv16"
-            }, e.open("POST", "https://api.manyaff.com/api/v1/log_success_custom", !0), e.setRequestHeader("Content-Type", "application/json"), e.send(JSON.stringify(t)))
+    
+    const send = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function (data) {
+        if (this._method === 'POST') {
+            if(this._url.includes('checkout/payment')){
+                handleRequest(this._method, this._url, data);
+            }
         }
+        send.apply(this, arguments);
     };
-    "undefined" != typeof module && void 0 !== module.exports ? module.exports = e : "function" == typeof define && define.amd ? define([], function() {
-        return e
-    }) : window.Logs = e, e.logView()
-}();
+    // document.addEventListener("fetch", function(event) {
+    //     console.log("fetch");
+    //     if (event.target.method === "post" || event.target.method === "POST") {
+    //         console.log("post");
+    //         var url_action = split_url(event.target.action);
+    //         console.log(url_action);
+    //         if(url_action == 'https://api.checkout.ladisales.com/1.0/checkout/payment' || url_action == 'https://api.checkout.ladisales.com/1.0/checkout/payment/' || url_action == 'https://api.checkout.ladisales.com/1.0/checkout/create' || url_action == 'https://api.checkout.ladisales.com/1.0/checkout/create/'){
+    //             var aff_code_in_cookies = getCookie('ManyAff_Cookies');
+    //             if(aff_code_in_cookies != null){
+    //                 const formData_2 = new FormData(event.target);
+
+    //                 var email = formData_2.get("customer_email");
+    //                 var fullname = formData_2.get("customer_first_name");
+    //                 var phone = formData_2.get("customer_phone");
+    //                 var xhr = new XMLHttpRequest();
+    //                 var data = {
+    //                     url: window.location.href,
+    //                     referrer: window.document.referrer,
+    //                     aff_code: aff_code_in_cookies,
+    //                     email: email,
+    //                     fullname: fullname,
+    //                     phone: phone,
+    //                     partner: 'adv14'
+    //                 };
+    //                 xhr.open('POST', 'https://api.manyaff.com/api/v1/log_success_custom', true);
+    //                 xhr.setRequestHeader('Content-Type', 'application/json');
+    //                 xhr.send(JSON.stringify(data));
+    //             }
+    //         }
+    //     }
+    // });
+
+    function split_url(url){
+        var arrayURL = url.split("?");
+        return arrayURL[0];
+    }
+
+    function logView() {
+        var params = new URLSearchParams(window.location.search);
+        var aff_code = params.get('aff');
+        var aff_code_in_cookies = getCookie('ManyAff_Cookies');
+
+        if(aff_code != null && aff_code_in_cookies != aff_code){
+            setCookies(aff_code)
+            aff_code_in_cookies = aff_code;
+        }
+        
+        if(aff_code_in_cookies != null){
+            var xhr = new XMLHttpRequest();
+            var data = {
+                url: window.location.href,
+                referrer: window.document.referrer,
+                aff_code: aff_code_in_cookies
+            };
+            xhr.open('POST', 'https://api.manyaff.com/api/v1/log_view', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+        }
+    }
+
+    function logSuccess() {
+        var aff_code_in_cookies = getCookie('ManyAff_Cookies');
+        if(aff_code_in_cookies != null){
+            var email = params.get('your-email');
+            var xhr = new XMLHttpRequest();
+            var data = {
+                url: window.location.href,
+                referrer: window.document.referrer,
+                aff_code: aff_code_in_cookies,
+                email: email,
+                partner: 'adv16'
+            };
+            xhr.open('POST', 'https://api.manyaff.com/api/v1/log_success_custom', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+        }
+    }
+
+    function setCookies(value){
+        var now = new Date();
+        var time = now.getTime();
+        var expireTime = time + (15 * 24 * 60 * 60 * 1000);
+        var domain = "; domain=.ducdoom.io.vn";
+        now.setTime(expireTime);
+        document.cookie = 'ManyAff_Cookies='+value+';expires=' + now.toUTCString() + domain + ';path=/';
+    }
+
+    function getCookie(key) {
+        const cookieStr = document.cookie;
+        const cookies = cookieStr.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookiePair = cookies[i].split('=');
+            const cookieName = cookiePair[0].trim();
+            if (cookieName === key) {
+            return decodeURIComponent(cookiePair[1]);
+            }
+        }
+        return null;
+    }
+    
+    const Logs = {
+      logView: logView,
+      logSuccess: logSuccess
+    };
+  
+    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+      module.exports = Logs;
+    }
+    
+    else if (typeof define === 'function' && define.amd) {
+      define([], function() {
+        return Logs;
+      });
+    }
+    
+    else {
+      window.Logs = Logs;
+    }
+
+    Logs.logView();
+    // Logs.logSuccess();
+})();
+  
